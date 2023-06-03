@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+  {{ agent.name }}'s profile
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="content-section">
+        <div class="media">
+            <div class="media-body">
+                <h2 style="color:#575757;" class="account-heading">&nbsp;{{ agent.name }}</h2>
+                <a href="{% url 'edit-agents' agent.pk %}" class="btn btn-info" style="float: right;">Edit Details</a>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="fal">
+                            <b>Contact &nbsp; &nbsp;&nbsp; :</b> {{ agent.phone }} <br>
+
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-css table-hover table-bordered">
+
+        <br>
+
+        <thead class="thead-dark align-middle">
+            <tr>
+                <th width="10%">Sale No.</th>
+                <th width="15%">Stocks</th>
+                <th width="15%">Quantity</th>
+                <th width="15%">Total Sale Value</th>
+                <th width="15%">Purchased Date</th>
+                <th width="30%">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for sale in bills %}
+            <tr>
+                <td class="align-middle"> <p>{{ sale.billno }}</p> </td>
+                <td class="align-middle">{% for item in sale.get_items_list %} {{ item.stock.name }} <br> {% endfor %}</td>
+                <td class="align-middle">{% for item in sale.get_items_list %} {{ item.quantity }} <br> {% endfor %}</td>
+                <td class="align-middle">${{ sale.get_total_price }}</td>
+                <td class="align-middle">{{ sale.time.date }}</td>
+                <td class="align-middle"> <a href="{% url 'sale-bill' sale.billno %}" class="btn btn-secondary">View Bill</a> <a href="{% url 'delete-sale' sale.pk %}" class="btn btn-danger">Delete Sale</a> </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+    <div class="align-middle">
+        {% if sales.has_other_pages %}
+
+            {% if sales.has_previous %}
+                <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+                <a class="btn btn-outline-info mb-4" href="?page={{ sales.previous_page_number }}">Previous</a>
+            {% endif %}
+
+            {% for num in sales.paginator.page_range %}
+                {% if sales.number == num %}
+                    <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+                {% elif num > sales.number|add:'-3' and num < sales.number|add:'3' %}
+                    <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if sales.has_next %}
+                <a class="btn btn-outline-info mb-4" href="?page={{ sales.next_page_number }}">Next</a>
+                <a class="btn btn-outline-info mb-4" href="?page={{ sales.paginator.num_pages }}">Last</a>
+            {% endif %}
+
+        {% endif %}
+    </div>
+
+</div>
+
+{% endblock content %}
